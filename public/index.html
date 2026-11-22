@@ -9,12 +9,13 @@ body{font-family:Tahoma,sans-serif;background:#f2ede3;margin:0;padding:16px;colo
 #box{max-width:520px;margin:0 auto}
 h1{font-size:1.2rem;color:#5c6b52}
 #log{background:#fff;border-radius:12px;padding:12px;min-height:280px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.msg{margin:8px 0;padding:8px 12px;border-radius:10px;max-width:90%}
+.msg{margin:8px 0;padding:8px 12px;border-radius:10px;max-width:90%;white-space:pre-wrap}
 .user{background:#e8efe4;margin-right:auto}
 .ro{background:#f7f0e8;margin-left:auto}
 #row{display:flex;gap:8px}
 input{flex:1;padding:10px;border:1px solid #d8cfbc;border-radius:8px}
 button{padding:10px 16px;background:#5c6b52;color:#fff;border:0;border-radius:8px}
+button:disabled{opacity:.6}
 </style>
 </head>
 <body>
@@ -29,6 +30,7 @@ button{padding:10px 16px;background:#5c6b52;color:#fff;border:0;border-radius:8p
 <script>
 const log=document.getElementById('log');
 const inp=document.getElementById('inp');
+const btn=document.getElementById('send');
 const history=[];
 function add(role,text){
   const d=document.createElement('div');
@@ -43,16 +45,22 @@ async function go(){
   inp.value='';
   add('user',message);
   history.push({role:'user',content:message});
+  btn.disabled=true;
   try{
     const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,history})});
-    const j=await r.json();
-    const reply=j.reply||j.error||'خطا';
-    add('ro',reply);
-    history.push({role:'assistant',content:reply});
-  }catch(e){add('ro','خطا: '+e.message)}
+    const j=await r.json().catch(()=>({}));
+    const reply=j.reply||j.detail||j.error||('خطا کد '+r.status);
+    add('ro',String(reply));
+    history.push({role:'assistant',content:String(reply)});
+  }catch(e){
+    add('ro','خطای شبکه: '+e.message);
+  }finally{
+    btn.disabled=false;
+  }
 }
-document.getElementById('send').onclick=go;
+btn.onclick=go;
 inp.onkeydown=e=>{if(e.key==='Enter')go()};
 add('ro','سلام. من رو هستم. اینجام.');
-</script>\n</body>
+</script>
+</body>
 </html>
