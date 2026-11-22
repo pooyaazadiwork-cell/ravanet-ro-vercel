@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>رو — تست</title>
+<style>
+body{font-family:Tahoma,sans-serif;background:#f2ede3;margin:0;padding:16px;color:#2a2a24}
+#box{max-width:520px;margin:0 auto}
+h1{font-size:1.2rem;color:#5c6b52}
+#log{background:#fff;border-radius:12px;padding:12px;min-height:280px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.msg{margin:8px 0;padding:8px 12px;border-radius:10px;max-width:90%}
+.user{background:#e8efe4;margin-right:auto}
+.ro{background:#f7f0e8;margin-left:auto}
+#row{display:flex;gap:8px}
+input{flex:1;padding:10px;border:1px solid #d8cfbc;border-radius:8px}
+button{padding:10px 16px;background:#5c6b52;color:#fff;border:0;border-radius:8px}
+</style>
+</head>
+<body>
+<div id="box">
+<h1>رو — تست Vercel</h1>
+<div id="log"></div>
+<div id="row">
+<input id="inp" placeholder="اینجا بنویس..." />
+<button id="send">بفرست</button>
+</div>
+</div>
+<script>
+const log=document.getElementById('log');
+const inp=document.getElementById('inp');
+const history=[];
+function add(role,text){
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'user':'ro');
+  d.textContent=text;
+  log.appendChild(d);
+  log.scrollTop=log.scrollHeight;
+}
+async function go(){
+  const message=inp.value.trim();
+  if(!message)return;
+  inp.value='';
+  add('user',message);
+  history.push({role:'user',content:message});
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,history})});
+    const j=await r.json();
+    const reply=j.reply||j.error||'خطا';
+    add('ro',reply);
+    history.push({role:'assistant',content:reply});
+  }catch(e){add('ro','خطا: '+e.message)}
+}
+document.getElementById('send').onclick=go;
+inp.onkeydown=e=>{if(e.key==='Enter')go()};
+add('ro','سلام. من رو هستم. اینجام.');
+</script>\n</body>
+</html>
