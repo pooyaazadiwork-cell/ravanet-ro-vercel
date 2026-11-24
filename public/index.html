@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>رو — تست</title>
+<title>رو — روانت</title>
 <style>
 body{font-family:Tahoma,sans-serif;background:#f2ede3;margin:0;padding:16px;color:#2a2a24}
 #box{max-width:520px;margin:0 auto}
@@ -15,15 +15,18 @@ h1{font-size:1.2rem;color:#5c6b52}
 #row{display:flex;gap:8px}
 input{flex:1;padding:10px;border:1px solid #d8cfbc;border-radius:8px}
 button{padding:10px 16px;background:#5c6b52;color:#fff;border:0;border-radius:8px}
+button.ghost{background:transparent;color:#5c6b52;border:1px solid #c5cbb8}
 button:disabled{opacity:.6}
+.tools{display:flex;gap:8px;margin-bottom:8px}
 </style>
 </head>
 <body>
 <div id="box">
-<h1>رو — تست Vercel</h1>
+<h1>رو — همراه روانت</h1>
+<div class="tools"><button type="button" class="ghost" id="btnNew">گفتگوی تازه</button></div>
 <div id="log"></div>
 <div id="row">
-<input id="inp" placeholder="اینجا بنویس..." />
+<input id="inp" placeholder="هرچه در ذهنت هست…" />
 <button id="send">بفرست</button>
 </div>
 </div>
@@ -31,36 +34,23 @@ button:disabled{opacity:.6}
 const log=document.getElementById('log');
 const inp=document.getElementById('inp');
 const btn=document.getElementById('send');
-const history=[];
-function add(role,text){
-  const d=document.createElement('div');
-  d.className='msg '+(role==='user'?'user':'ro');
-  d.textContent=text;
-  log.appendChild(d);
-  log.scrollTop=log.scrollHeight;
-}
+let history=[];
+function add(role,text){const d=document.createElement('div');d.className='msg '+(role==='user'?'user':'ro');d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+function resetChat(){history=[];log.innerHTML='';add('ro','سلام. من رو هستم؛ همراه هوشمند روانت. درمانگر نیستم؛ اینجام که بشنوم.');}
+document.getElementById('btnNew').onclick=resetChat;
 async function go(){
-  const message=inp.value.trim();
-  if(!message)return;
-  inp.value='';
-  add('user',message);
-  history.push({role:'user',content:message});
-  btn.disabled=true;
+  const message=inp.value.trim();if(!message)return;inp.value='';add('user',message);
+  history.push({role:'user',content:message});btn.disabled=true;
   try{
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,history})});
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,history:history.slice(0,-1)})});
     const j=await r.json().catch(()=>({}));
     const reply=j.reply||j.detail||j.error||('خطا کد '+r.status);
-    add('ro',String(reply));
-    history.push({role:'assistant',content:String(reply)});
-  }catch(e){
-    add('ro','خطای شبکه: '+e.message);
-  }finally{
-    btn.disabled=false;
-  }
+    add('ro',String(reply));history.push({role:'assistant',content:String(reply)});
+    if(history.length>24) history=history.slice(-24);
+  }catch(e){add('ro','خطای شبکه: '+e.message);}finally{btn.disabled=false;}
 }
-btn.onclick=go;
-inp.onkeydown=e=>{if(e.key==='Enter')go()};
-add('ro','سلام. من رو هستم. اینجام.');
+btn.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
+add('ro','سلام. من رو هستم؛ همراه هوشمند روانت. درمانگر نیستم؛ اینجام که بشنوم.');
 </script>
 </body>
 </html>
