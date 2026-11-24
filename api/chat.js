@@ -6,30 +6,30 @@ const SYSTEM = `تو «رو» هستی؛ همراه هوشمند روانت. د�
 تشخیص/دارو/روش آسیب ممنوع. بحران واضح: ۱۱۵ و ۱۲۳. ایده نرم مثل کاش بیدار نمی‌شدم: همدلی + یادآوری ۱۱۵/۱۲۳ در صورت فشار زیاد.`;
 
 function crisis(t) {
-  if (/\u0631\u0648\u0634\s*\u062e\u0648\u062f\u06a9\u0634\u06cc|\u0686\u0637\u0648\u0631\s*\u062e\u0648\u062f\u0645\s*\u0631\u0627\s*\u0628\u06a9\u0634\u0645|\u0645\u06cc\u200c\u062e\u0648\u0627\u0645\s*\u0628\u06a9\u0634\u0645|\u0645\u06cc\u062e\u0648\u0627\u0645\s*\u0628\u06a9\u0634\u0645/.test(t)) {
-    return "\u0627\u06af\u0631 \u062f\u0631 \u062e\u0637\u0631 \u0641\u0648\u0631\u06cc \u0647\u0633\u062a\u06cc \u0628\u0627 \u0627\u0648\u0631\u0698\u0627\u0646\u0633 \u06f1\u06f1\u06f5 \u06cc\u0627 \u0627\u0648\u0631\u0698\u0627\u0646\u0633 \u0627\u062c\u062a\u0645\u0627\u0639\u06cc \u06f1\u06f2\u06f3 \u062a\u0645\u0627\u0633 \u0628\u06af\u06cc\u0631. \u062a\u0646\u0647\u0627 \u0646\u0628\u0627\u0634.";
+  if (/روش\s*خودکشی|چطور\s*خودم\s*را\s*بکشم|می‌خوام\s*بکشم|میخوام\s*بکشم/.test(t)) {
+    return "اگر در خطر فوری هستی با اورژانس ۱۱۵ یا اورژانس اجتماعی ۱۲۳ تماس بگیر. تنها نباش.";
   }
   return null;
 }
 function softCrisis(t) {
-  if (/\u06a9\u0627\u0634\s*(\u0635\u0628\u062d\s*)?\u0628\u06cc\u062f\u0627\u0631\s*\u0646\u0645\u06cc|\u0646\u0645\u06cc\u200c\u062e\u0648\u0627\u0645\s*\u0632\u0646\u062f|\u0646\u0645\u06cc\u062e\u0648\u0627\u0645\s*\u0632\u0646\u062f|\u0627\u06cc\s*\u06a9\u0627\u0634\s*\u0645\u0631\u062f\u0647/.test(t)) {
-    return "\u0627\u06cc\u0646 \u062d\u0633 \u062e\u06cc\u0644\u06cc \u0633\u0646\u06af\u06cc\u0646\u0647. \u0627\u06af\u0631 \u0641\u0634\u0627\u0631 \u0628\u0631\u0627\u06cc\u062a \u063a\u06cc\u0631\u0642\u0627\u0628\u0644 \u062a\u062d\u0645\u0644 \u0627\u0633\u062a\u060c \u0628\u0627 \u06f1\u06f1\u06f5 \u06cc\u0627 \u06f1\u06f2\u06f3 \u062d\u0631\u0641 \u0628\u0632\u0646. \u0627\u06cc\u0646\u062c\u0627\u0645\u061b \u0627\u06af\u0631 \u062e\u0648\u0627\u0633\u062a\u06cc \u0627\u0632 \u0647\u0645\u0627\u0646 \u0633\u0646\u06af\u06cc\u0646\u06cc \u0628\u06af\u0648 \u2014 \u0628\u062f\u0648\u0646 \u062c\u0632\u0626\u06cc\u0627\u062a \u0622\u0633\u06cc\u0628.";
+  if (/کاش\s*(صبح\s*)?بیدار\s*نمی|نمی‌خوام\s*زند|نمیخوام\s*زند|ای\s*کاش\s*مرده/.test(t)) {
+    return "این حس خیلی سنگینه. اگر فشار برایت غیرقابل تحمل است، با ۱۱۵ یا ۱۲۳ حرف بزن. اینجام؛ اگر خواستی از همان سنگینی بگو — بدون جزئیات آسیب.";
   }
   return null;
 }
 function offTopic(t) {
-  if (/(\u0645\u0639\u0627\u062f\u0644\u0647|\u0631\u06cc\u0627\u0636\u06cc|\u062d\u0644\s*\u06a9\u0646|\u06a9\u062f\s*\u0628\u0632\u0646|\u067e\u0627\u06cc\u062a\u0648\u0646|\u062a\u0631\u062c\u0645\u0647\s*\u06a9\u0646|javascript|\u0627\u0645\u0644\u0627\u06cc|\u062a\u0627\u0631\u06cc\u062e\s*\u0686\u0646\u062f|\u067e\u0627\u06cc\u062a\u062e\u062a)/i.test(t) &&
-      !/(\u0627\u0633\u062a\u0631\u0633|\u0627\u0636\u0637\u0631\u0627\u0628|\u062d\u0627\u0644\u0645|\u063a\u0645|\u062a\u0646\u0647\u0627|\u062f\u0639\u0648\u0627|\u062e\u0627\u0646\u0648\u0627\u062f\u0647|\u0631\u0627\u0628\u0637\u0647)/.test(t)) {
-    return "\u0645\u0646 \u0628\u0631\u0627\u06cc \u0627\u06cc\u0646 \u06a9\u0627\u0631 \u0646\u06cc\u0633\u062a\u0645\u061b \u0647\u0645\u0631\u0627\u0647 \u0631\u0648\u0627\u0646\u062a\u0645. \u0627\u06af\u0631 \u0686\u06cc\u0632\u06cc \u0627\u0632 \u062d\u0627\u0644 \u06cc\u0627 \u0630\u0647\u0646\u062a \u0641\u0634\u0627\u0631 \u0645\u06cc\u200c\u0622\u0631\u0647 \u0628\u06af\u0648.";
+  if (/(معادله|ریاضی|حل\s*کن|کد\s*بزن|پایتون|ترجمه\s*کن|javascript|املای|تاریخ\s*چند|پایتخت)/i.test(t) &&
+      !/(استرس|اضطراب|حالم|غم|تنها|دعوا|خانواده|رابطه)/.test(t)) {
+    return "من برای این کار نیستم؛ همراه روانتم. اگر چیزی از حال یا ذهنت فشار می‌آره بگو.";
   }
   return null;
 }
 function boundary(t) {
-  if (/\u062f\u0627\u0631\u0648|\u0642\u0631\u0635|\u062f\u0648\u0632/.test(t) && /\u0628\u062e\u0648\u0631|\u062a\u062c\u0648\u06cc\u0632|\u0686\u06cc\s*\u0628\u06af\u06cc\u0631\u0645/.test(t)) {
-    return "\u0645\u0646 \u0646\u0645\u06cc\u200c\u062a\u0648\u0646\u0645 \u062f\u0631\u0628\u0627\u0631\u0647 \u062f\u0627\u0631\u0648 \u0646\u0638\u0631 \u0628\u062f\u0645. \u0627\u06cc\u0646 \u0631\u0627 \u0628\u0627 \u067e\u0632\u0634\u06a9 \u06cc\u0627 \u0631\u0648\u0627\u0646\u200c\u067e\u0632\u0634\u06a9 \u0645\u0637\u0631\u062d \u06a9\u0646.";
+  if (/دارو|قرص|دوز/.test(t) && /بخور|تجویز|چی\s*بگیرم/.test(t)) {
+    return "من نمی‌تونم درباره دارو نظر بدم. این را با پزشک یا روان‌پزشک مطرح کن.";
   }
-  if (/\u062a\u0634\u062e\u06cc\u0635\s*\u0628\u062f\u0647|\u0627\u0641\u0633\u0631\u062f\u06af\u06cc\s*\u062f\u0627\u0631\u0645\?/.test(t)) {
-    return "\u062a\u0634\u062e\u06cc\u0635 \u0628\u0627 \u0645\u062a\u062e\u0635\u0635 \u0627\u0633\u062a\u061b \u0645\u0646 \u062c\u0627\u0634 \u0646\u06cc\u0633\u062a\u0645. \u0627\u06af\u0631 \u062e\u0648\u0627\u0633\u062a\u06cc \u0627\u0632 \u062d\u0627\u0644\u200c\u062a \u0628\u06af\u0648.";
+  if (/تشخیص\s*بده|افسردگی\s*دارم\?/.test(t)) {
+    return "تشخیص با متخصص است؛ من جاش نیستم. اگر خواستی از حال‌ت بگو.";
   }
   return null;
 }
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
     const userText = String(body.message || body.text || "").trim();
     const history = Array.isArray(body.history) ? body.history : [];
-    if (!userText) return res.status(400).json({ error: "message required", reply: "\u067e\u06cc\u0627\u0645 \u062e\u0627\u0644\u06cc \u0628\u0648\u062f." });
+    if (!userText) return res.status(400).json({ error: "message required", reply: "پیام خالی بود." });
 
     const hard = crisis(userText);
     if (hard) return res.status(200).json({ reply: hard, mode: "crisis", source: "safety" });
@@ -68,11 +68,7 @@ export default async function handler(req, res) {
     let BASE_URL = (process.env.RO_LLM_BASE_URL || "").replace(/\/$/, "");
     const MODEL = process.env.RO_LLM_MODEL || "";
     if (!API_KEY || !BASE_URL || !MODEL) {
-      return res.status(200).json({
-        reply: "\u062a\u0646\u0638\u06cc\u0645\u0627\u062a \u0645\u062f\u0644 \u0646\u0627\u0642\u0635 \u0627\u0633\u062a.",
-        mode: "presence",
-        source: "local",
-      });
+      return res.status(200).json({ reply: "تنظیمات مدل ناقص است.", mode: "presence", source: "local" });
     }
     if (!/\/v1$/i.test(BASE_URL)) BASE_URL = BASE_URL.replace(/\/+$/, "") + "/v1";
 
@@ -87,10 +83,7 @@ export default async function handler(req, res) {
 
     const r = await fetch(`${BASE_URL}/chat/completions`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: authHeader(API_KEY),
-      },
+      headers: { "Content-Type": "application/json", Authorization: authHeader(API_KEY) },
       body: JSON.stringify({
         model: MODEL,
         temperature: 0.7,
@@ -99,16 +92,11 @@ export default async function handler(req, res) {
       }),
     });
     const raw = await r.text();
-    if (!r.ok) {
-      return res.status(200).json({ reply: `\u062e\u0637\u0627\u06cc \u0645\u062f\u0644 (${r.status}): ${raw.slice(0, 280)}`, error: "llm_error" });
-    }
+    if (!r.ok) return res.status(200).json({ reply: `خطای مدل (${r.status}): ${raw.slice(0, 280)}`, error: "llm_error" });
     const data = JSON.parse(raw);
-    const reply =
-      data.choices?.[0]?.message?.content ||
-      data.choices?.[0]?.text ||
-      "\u067e\u0627\u0633\u062e \u062e\u0627\u0644\u06cc.";
+    const reply = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "پاسخ خالی.";
     return res.status(200).json({ reply, mode: "presence", source: "llm", model: MODEL });
   } catch (e) {
-    return res.status(200).json({ reply: "\u062e\u0637\u0627\u06cc \u0633\u0631\u0648\u0631: " + String(e.message || e) });
+    return res.status(200).json({ reply: "خطای سرور: " + String(e.message || e) });
   }
 }
