@@ -1,9 +1,27 @@
 const SYSTEM = `تو «رو» هستی؛ همراه هوشمند روانت. درمانگر یا روان‌پزشک نیستی.
-فارسی محاوره. معمولاً ۲–۴ جمله. همدل باش؛ داستان را کامل برنگردان؛ جواب یک‌کلمه‌ای سرد نده.
-فقط حوزه سلامت روان، احساسات، روابط، استرس، خانواده، دردِدل و مسیر روانت.
-ریاضی، تکلیف، کد، اخبار و موضوعات غیرروانی را حل نکن؛ کوتاه بگو کار تو نیست و برگردان به حال کاربر.
-وقتی سلام یا «تو کی هستی»: «من رو هستم؛ همراه هوشمند روانت. درمانگر نیستم؛ اینجام که بشنوم.»
-تشخیص/دارو/روش آسیب ممنوع. بحران واضح: ۱۱۵ و ۱۲۳. ایده نرم مثل کاش بیدار نمی‌شدم: همدلی + یادآوری ۱۱۵/۱۲۳ در صورت فشار زیاد.`;
+
+برند: روانت | فارسی محاوره | معمولاً ۲–۴ جمله | گاهی کمی بیشتر اگر لازم است.
+همدل و حاضر. داستان را کلمه به کلمه برنگردان. جواب یک‌کلمه‌ای سرد نده.
+هر پیام الزاماً سؤال نپرس؛ گاهی فقط حضور کافی است.
+
+حوزه فقط: سلامت روان، احساس، رابطه، استرس، خانواده، دردِدل، مسیر روانت.
+خارج از حوزه (ریاضی، تکلیف، کد، ترجمه درسی، اخبار، املا، پایتخت): حل نکن؛ کوتاه رد کن و برگردان به حال.
+
+معرفی فقط اول گفتگو یا وقتی صریح پرسید تو کی هستی:
+«من رو هستم؛ همراه هوشمند روانت. درمانگر نیستم؛ اینجام که بشنوم.»
+
+پیوستگی:
+- با history موجود ریست و معرفی دوباره ممنوع.
+- lets go / لتس گو / بزن بریم / ادامه = ادامه همان نخ.
+- ریست فقط با /start یا «گفتگوی تازه».
+
+مسیر گفتگو (شناختی-همراه، نه درمان رسمی):
+1) شنیدن و نام‌گذاری احساس 2) روشن کردن الگو/موقعیت 3) در صورت آمادگی یک گام کوچک یا جمع‌بندی نرم.
+عجل برای نصیحت نکن. تشخیص نده. دارو نده.
+
+اگر خلاصه شخص (person) در پیام سیستم آمده، لحن و موضوع را با آن هماهنگ کن؛ ادعا نکن «همه‌چیز را برای همیشه حفظ کردم» مگر رضایت صریح حافظه باشد.
+
+ایمنی: روش آسیب نه. بحران واضح → ۱۱۵ و ۱۲۳. ایده نرم → همدلی + ۱۱۵/۱۲۳ در فشار زیاد.`;
 
 function crisis(t) {
   if (/روش\s*خودکشی|چطور\s*خودم\s*را\s*بکشم|می‌خوام\s*بکشم|میخوام\s*بکشم/.test(t)) {
@@ -18,7 +36,7 @@ function softCrisis(t) {
   return null;
 }
 function offTopic(t) {
-  if (/(معادله|ریاضی|حل\s*کن|کد\s*بزن|پایتون|ترجمه\s*کن|javascript|املای|تاریخ\s*چند|پایتخت)/i.test(t) &&
+  if (/(معادله|ریاضی|حل\s*کن|کد\s*بزن|پایتون|ترجمه\s*کن|javascript|املای|املا\s|تاریخ\s*چند|پایتخت|تکلیف|مشق)/i.test(t) &&
       !/(استرس|اضطراب|حالم|غم|تنها|دعوا|خانواده|رابطه)/.test(t)) {
     return "من برای این کار نیستم؛ همراه روانتم. اگر چیزی از حال یا ذهنت فشار می‌آره بگو.";
   }
@@ -40,6 +58,53 @@ function authHeader(apiKey) {
   if (/^[0-9a-fA-F-]{16,}$/.test(k) || (k.includes("-") && !k.startsWith("sk-"))) return `apikey ${k}`;
   if (/^Bearer\s+/i.test(k)) return k;
   return `Bearer ${k}`;
+}
+
+function qualityNote(reply, hasHistory) {
+  if (!reply) return "empty";
+  if (hasHistory && /من رو هستم|همراه هوشمند روانت/.test(reply) && /سلام/.test(reply)) return "reintro";
+  return "ok";
+}
+
+function inferPersonHints(history) {
+  const userBits = (history || [])
+    .filter((m) => m && (m.role === "user"))
+    .map((m) => String(m.content || m.text || ""))
+    .slice(-8);
+  const blob = userBits.join(" ");
+  const traits = [];
+  if (/تنها|تنهایی|کسی\s*نمی/.test(blob)) traits.push("تم: تنهایی/ندیده شدن");
+  if (/مادر|مادرشوهر|خانواده|پدر/.test(blob)) traits.push("تم: خانواده");
+  if (/کار|رئیس|همکار|اداره/.test(blob)) traits.push("تم: کار");
+  if (/رابطه|دوست\s*پسر|دوست\s*دختر|همسر|شوهر|نامزد/.test(blob)) traits.push("تم: رابطه");
+  if (/عصبی|عصب|خشم|فحش|کیر/.test(blob)) traits.push("لحن: ممکن است تند/خسته باشد — آرام بمان");
+  if (/استرس|اضطراب|نگران/.test(blob)) traits.push("احساس غالب: استرس/نگرانی");
+  if (/غم|گریه|حالم\s*بد|بدم/.test(blob)) traits.push("احساس غالب: غم/فرسودگی");
+  if (!traits.length) return "";
+  return "نشانه‌های شخص از گفتگوی اخیر (فرضی، نه تشخیص): " + traits.join(" | ");
+}
+
+function buildMessages(userText, history) {
+  const prev = (history || [])
+    .filter((m) => m && (m.role === "user" || m.role === "assistant" || m.role === "ro"))
+    .slice(-12)
+    .map((m) => ({
+      role: m.role === "ro" ? "assistant" : m.role,
+      content: String(m.content || m.text || ""),
+    }));
+  const msgs = [{ role: "system", content: SYSTEM }];
+  if (prev.length > 0) {
+    msgs.push({
+      role: "system",
+      content:
+        "ادامه گفتگوی قبلی. ریست و معرفی دوباره ممنوع. lets go / بزن بریم / ادامه = ادامه همان نخ. به احساس و موضوع قبلی وصل بمان.",
+    });
+    const person = inferPersonHints(prev);
+    if (person) msgs.push({ role: "system", content: person });
+  }
+  msgs.push(...prev);
+  msgs.push({ role: "user", content: userText });
+  return msgs;
 }
 
 export default async function handler(req, res) {
@@ -72,30 +137,18 @@ export default async function handler(req, res) {
     }
     if (!/\/v1$/i.test(BASE_URL)) BASE_URL = BASE_URL.replace(/\/+$/, "") + "/v1";
 
-    const messages = history
-      .filter((m) => m && (m.role === "user" || m.role === "assistant" || m.role === "ro"))
-      .slice(-10)
-      .map((m) => ({
-        role: m.role === "ro" ? "assistant" : m.role,
-        content: String(m.content || m.text || ""),
-      }));
-    messages.push({ role: "user", content: userText });
-
+    const messages = buildMessages(userText, history);
     const r = await fetch(`${BASE_URL}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: authHeader(API_KEY) },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.7,
-        max_tokens: 400,
-        messages: [{ role: "system", content: SYSTEM }, ...messages],
-      }),
+      body: JSON.stringify({ model: MODEL, temperature: 0.7, max_tokens: 600, messages }),
     });
     const raw = await r.text();
     if (!r.ok) return res.status(200).json({ reply: `خطای مدل (${r.status}): ${raw.slice(0, 280)}`, error: "llm_error" });
     const data = JSON.parse(raw);
-    const reply = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "پاسخ خالی.";
-    return res.status(200).json({ reply, mode: "presence", source: "llm", model: MODEL });
+    let reply = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "پاسخ خالی.";
+    const q = qualityNote(reply, history.length > 0);
+    return res.status(200).json({ reply, mode: "presence", source: "llm", model: MODEL, quality: q });
   } catch (e) {
     return res.status(200).json({ reply: "خطای سرور: " + String(e.message || e) });
   }
